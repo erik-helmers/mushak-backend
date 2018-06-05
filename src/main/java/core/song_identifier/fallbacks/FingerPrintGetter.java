@@ -1,4 +1,4 @@
-package core.song_identifier;
+package core.song_identifier.fallbacks;
 
 
 import core.Settings;
@@ -18,6 +18,8 @@ public class FingerPrintGetter {
     public void find(Path path){
 
         ProcessBuilder child = new ProcessBuilder("");
+
+        //TODO: implement this (accoustid recognition as last fallback)
 
     }
 }

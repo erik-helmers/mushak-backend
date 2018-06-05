@@ -1,6 +1,7 @@
 package core.entities.mediatypes;
 
 import core.entities.Entity;
+import easysqlite.annotations.Table;
 import lombok.Builder;
 
 /**
@@ -8,17 +9,16 @@ import lombok.Builder;
  * By Erik Helmers, the 23/05/2018
  */
 
-public class Genre extends Entity<Genre.Id> {
+@Table("genres")
+public class Genre extends MusicElement {
 
-    public final String name;
 
     @Builder
-    protected Genre(Integer id, String name) {
-        super(new Id(id!=null?id:0));
-        this.name = name;
+    public Genre(Integer id, String name) {
+        super(new Id(id), name);
     }
 
-    public final static class Id extends Entity.Id<Integer>{
+    public final static class Id extends MusicElement.Id{
         protected Id(Integer id) {
             super(id);
         }

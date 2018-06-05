@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-
+/*
 @Log4j2
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -52,4 +52,4 @@ public class MusicDatabaseTest {
         db.write.artist(artist);
     }
 
-}
+}*/

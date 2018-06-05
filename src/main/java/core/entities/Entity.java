@@ -12,8 +12,9 @@ import java.lang.reflect.Type;
 
 public abstract class Entity<T extends Entity.Id> {
 
-    public final T id;
+    public T id;
 
+    protected Entity(){}
     protected Entity(T id) {
         this.id = id;
     }
@@ -23,7 +24,7 @@ public abstract class Entity<T extends Entity.Id> {
 
         protected final T _id;
 
-        protected Id(T id) {
+        public Id(T id) {
             this._id = id;
         }
 

@@ -24,7 +24,6 @@ import java.util.List;
 public class FileTags {
 
 
-
     public Genre getGenre(Tag tag){
         return Genre.builder()
                 .name(tag.getFirst(FieldKey.GENRE))
@@ -57,7 +56,7 @@ public class FileTags {
 
     int getFirstInt(Tag tag, FieldKey s){
         String x = getFirst(tag, s);
-        if (x.equals("") || x.equals("null")) return -1;
+        if (x == null || x.equals("") || x.equals("null")) return -1;
         return Integer.parseInt(x);
     }
 
@@ -73,7 +72,7 @@ public class FileTags {
         } return otpt;
     }
 
-    void single(Path path) throws Exception{
+    Song single(Path path) throws Exception{
 
         AudioFile f;
         try {
@@ -97,14 +96,24 @@ public class FileTags {
 
         return Song.builder()
                 .title(title)
-                .
+                .track_no(track_no)
+                .duration(duration)
+                .build();
 
 
 
     }
 
-    void register_from_paths(List<Path> paths){
 
+    // TODO: 05/06/18 broke pour Romain <3 
+    /*
+
+    /**
+     * This thing's shit
+     * @param paths
+
+
+    void register_from_paths(List<Path> paths){
         HashMap<String, Artist> artists = new HashMap<>();
         HashMap<String, Album> albums = new HashMap<>();
         HashMap<String, Genre> genres = new HashMap<>();
@@ -156,7 +165,7 @@ public class FileTags {
                         .duration(ah.getTrackLength())
                         .track_no(track_no)
                         .build();
-                */
+
                 Song song = Song.builder()
                         .id(0)
                         .title(path.getFileName().toString())
@@ -189,5 +198,6 @@ public class FileTags {
 
 
 
-    }
+    }*/
+
 }

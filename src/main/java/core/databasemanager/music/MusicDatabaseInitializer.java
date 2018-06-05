@@ -3,29 +3,21 @@ package core.databasemanager.music;
 
 import core.Settings;
 import core.databasemanager.DatabaseModule;
-import core.entities.mediatypes.Album;
-import core.entities.mediatypes.Artist;
-import core.entities.mediatypes.Genre;
-import core.entities.mediatypes.Song;
+
 import core.entities.utils.SongUtils;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.AudioHeader;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
+import core.song_identifier.SongRegister;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 
 public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
+
 
     public MusicDatabaseInitializer(MusicDatabase database) {
         super(database);
@@ -62,7 +54,7 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
 
             Files.walkFileTree(Paths.get(settings.get(Settings.MUSIC_DIRECTORY)),
                     result);
-            register_from_paths(result.files);
+            new SongRegister(parent).register(result.files);
 
         } catch (IOException e) {
             System.out.println(e.getMessage());

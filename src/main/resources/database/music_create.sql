@@ -1,7 +1,7 @@
 create table IF NOT EXISTS songs(
     id integer PRIMARY KEY,
     name text NOT NULL,
-    path text NOT NULL,
+    path text,
     album text,
     artist text,
     number integer

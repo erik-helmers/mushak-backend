@@ -1,32 +1,33 @@
 package core.entities.mediatypes;
 
-import core.entities.Entity;
+
+import easysqlite.annotations.Column;
+import easysqlite.annotations.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.NonNull;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * Representation of a song, immutable
+ * those classes shouldnt have any logic
+ * they are just... dumb
  * By Erik Helmers, the 21/05/2018
  */
 
+@Table("songs")
 @FieldDefaults(level=AccessLevel.PUBLIC)
-public class Song extends Entity<Song.Id> {
+public class Song extends MusicElement {
 
-    String title;
+    @Column
     String path;
-
     Album.Id album;
     Artist.Id artist;
     Artist.Id[] featuring;
-
     int track_no;
     int duration;
 
+    public Song(){};
     @Builder
     public Song(Integer id,
                 String title,
@@ -35,8 +36,7 @@ public class Song extends Entity<Song.Id> {
                 Artist.Id artist,
                 Artist.Id[] featuring,
                 int track_no, int duration) {
-        super(new Id(id));
-        this.title = title;
+        super(new Id(id), title);
         this.path = path;
         this.album = album;
         this.artist = artist;
@@ -47,22 +47,11 @@ public class Song extends Entity<Song.Id> {
 
 
 
-    public final static class Id extends Entity.Id<Integer>{
-        public Id(int id) {
+    public final static class Id extends MusicElement.Id{
+        public Id(Integer id) {
             super(id);
         }
     }
-
-    public static Song resultSetToSong(ResultSet rs) throws SQLException {
-        return Song.builder()
-                .id(rs.getInt("id"))
-                .title(rs.getString("title"))
-                .path(rs.getString("path"))
-                .build();
-    }
-
-
-
 
 
 }

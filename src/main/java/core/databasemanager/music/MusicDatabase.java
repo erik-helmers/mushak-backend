@@ -2,19 +2,26 @@ package core.databasemanager.music;
 
 import core.Settings;
 import core.databasemanager.Database;
+import core.entities.mediatypes.Album;
+import core.entities.mediatypes.Artist;
+import core.entities.mediatypes.Genre;
+import core.entities.mediatypes.Song;
+import core.song_identifier.SongRegister;
+import easysqlite.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.*;
 import core.entities.utils.SongUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@org.springframework.stereotype.Repository
 public class MusicDatabase extends Database {
 
     //TODO: detect music-dir change
@@ -22,20 +29,27 @@ public class MusicDatabase extends Database {
 
     boolean rebuild_on_launch = false;
 
-    public final MusicDatabaseReader read;
-    public final MusicDatabaseWriter write;
+    public final Repository<Song> songs;
+    public final Repository<Album> albums;
+    public final Repository<Artist> artists;
+    public final Repository<Genre> genres;
+
 
     @Autowired
     public MusicDatabase(Settings settings) throws Exception{
         super(settings);
-        connect(settings.get(Settings.MUSIC_DB_PATH), populate.getFile());
 
-        read = new MusicDatabaseReader(this);
-        write = new MusicDatabaseWriter(this);
+        connection = Repository.create_connection(settings.get(Settings.MUSIC_DB_PATH), populate.getFile());
+
+        songs = new Repository<>(Song.class, connection);
+        albums = new Repository<>(Album.class, connection);
+        artists = new Repository<>(Artist.class, connection);
+        genres = new Repository<>(Genre.class, connection);
 
         if (settings.getBoolean(Settings.UPDATE_DB_ON_LOAD)) {
             new MusicDatabaseInitializer(this).build_database();
         }
+
 
     }
 

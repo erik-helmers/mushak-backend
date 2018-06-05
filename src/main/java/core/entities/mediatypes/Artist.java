@@ -1,6 +1,8 @@
 package core.entities.mediatypes;
 
 import core.entities.Entity;
+import easysqlite.annotations.Column;
+import easysqlite.annotations.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,20 +16,24 @@ import java.util.Optional;
  */
 
 
-@FieldDefaults(makeFinal = false, level = AccessLevel.PUBLIC)
-public class Artist extends Entity<Artist.Id> {
+@Table("artists")
+@FieldDefaults(level = AccessLevel.PUBLIC)
+public class Artist extends MusicElement {
 
-    String name;
-    List<Album.Id> albums = new ArrayList<>();
-    List<Song.Id> songs = new ArrayList<>();
+
+    @Column
+    List<Album.Id> albums;
+    @Column
+    List<Song.Id> songs;
+    @Column
     String metadata;
 
     @Builder
     public Artist(Integer id,
                   String name,
                   List<Album.Id> albums, List<Song.Id> songs, String metadata) {
-        super(new Id(id));
-        this.name = name;
+        super(new Id(id), name);
+
         this.albums = Optional.ofNullable(albums).orElse(new ArrayList<>());
         this.songs = Optional.ofNullable(songs).orElse(new ArrayList<>());
 
@@ -37,8 +43,8 @@ public class Artist extends Entity<Artist.Id> {
 
 
 
-    public final static class Id extends Entity.Id<Integer> {
-        protected Id(Integer id) {
+    public final static class Id extends MusicElement.Id {
+        public Id(Integer id) {
             super(id);
         }
     }

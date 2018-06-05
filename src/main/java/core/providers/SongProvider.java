@@ -24,7 +24,7 @@ public class SongProvider {
     }
 
     public void song(int id, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        Path path = SongUtils.toPath(music_db.read.song(id));
+        Path path = SongUtils.toPath(music_db.songs.search("id", String.valueOf(id)).get(0));
 
         MultipartFileSender.fromPath(path)
                 .with(request)
