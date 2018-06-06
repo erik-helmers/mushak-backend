@@ -9,6 +9,7 @@ import core.song_identifier.SongRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -49,6 +50,11 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
         System.out.println("====================== BEGINNING DB BUILD =========================");
         long startTime = System.nanoTime();
 
+        File file = settings.getPath(Settings.MUSIC_DIRECTORY).toFile();
+
+        if (!file.exists() || !file.isDirectory()){
+            throw new Error("music-dir should be a directory");
+        }
         FileHandler result = new FileHandler();
         try {
 
