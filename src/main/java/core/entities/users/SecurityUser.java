@@ -41,6 +41,7 @@ public class SecurityUser extends Entity<User.Id> implements UserDetails {
     String username;
     String password;
     String sessionId;
+    String salt;
     boolean accountNonExpired;
     boolean accountNonLocked;
     boolean credentialsNonExpired;

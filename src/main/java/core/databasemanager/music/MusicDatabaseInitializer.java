@@ -47,7 +47,6 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
      * iterates over all each file in music-dir
      * and passes them to *unknown* path to songs*/
     void build_database(){
-        System.out.println("====================== BEGINNING DB BUILD =========================");
         long startTime = System.nanoTime();
 
         File file = settings.getPath(Settings.MUSIC_DIRECTORY).toFile();
@@ -55,6 +54,7 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
         if (!file.exists() || !file.isDirectory()){
             throw new Error("music-dir should be a directory");
         }
+        System.out.println("g");
         FileHandler result = new FileHandler();
         try {
 
@@ -63,14 +63,10 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
             new SongRegister(parent).register(result.files);
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw new Error("IO ERROR");
+            throw new Error("IO ERROR", e);
         }
 
         long endTime = System.nanoTime();
-        System.out.println("================== DB BUILD ENDED SUCCESSFULLY ! ===================");
-        System.out.println("==================---- Added "+String.valueOf(result.files.size())+ " songs ! ===================");
-        System.out.println("==============--- took "+ String.valueOf((endTime-startTime)/1000000f)+ " ms ! ----===============");
 
     }
 

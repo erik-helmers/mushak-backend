@@ -1,6 +1,7 @@
 package core.databasemanager;
 
 import core.Settings;
+import logger.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public abstract class Database {
             conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement(populate);
             stmt.execute();
-            System.out.println("======== Initialized table !");
+            Log.debug_line("Initialized table !");
         } catch (SQLException e) {
             throw new Error(e);
         }

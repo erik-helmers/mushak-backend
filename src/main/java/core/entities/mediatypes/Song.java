@@ -1,8 +1,10 @@
 package core.entities.mediatypes;
 
 
-import easysqlite.annotations.Column;
-import easysqlite.annotations.Table;
+
+
+import easysqlite.annotations.declarations.Column;
+import easysqlite.annotations.declarations.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.ToString;

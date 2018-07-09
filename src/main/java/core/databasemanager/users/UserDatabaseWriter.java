@@ -30,7 +30,7 @@ public class UserDatabaseWriter extends DatabaseModule<UserDatabase> {
             pstmt.setString(2, account.password);
             pstmt.execute();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new Error(e);
         }
     }
 

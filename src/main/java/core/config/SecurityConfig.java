@@ -1,6 +1,7 @@
 package core.config;
 
 import core.Settings;
+import logger.Log;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -59,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private RequestMatcher getPublicUrls(){
         RequestMatcher publics;
         if (settings.getBoolean(Settings.ENABLE_SECURITY)) {
-            System.out.println("============== SECURITY ENABLED ! ===========");
+            Log.debug_line("============== SECURITY ENABLED ! ===========");
             publics = new OrRequestMatcher(
                     new AntPathRequestMatcher("/public/**")
             );

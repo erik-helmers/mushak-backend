@@ -2,6 +2,7 @@ package core.databasemanager.users;
 
 import core.Settings;
 import core.databasemanager.Database;
+import logger.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -24,7 +25,7 @@ public class UserDatabase extends Database {
     @Autowired
     public UserDatabase(Settings settings) throws Exception{
         super(settings);
-        System.out.println(settings.get(Settings.USERS_DB_PATH));
+        Log.debug_value("user-db-path", (settings.get(Settings.USERS_DB_PATH)));
         connect(settings.get(Settings.USERS_DB_PATH), populate_file.getFile());
 
         this.read = new UserDatabaseReader(this);

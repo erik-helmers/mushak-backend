@@ -37,11 +37,9 @@ public class Settings {
             prop.store(output, "============= MuShaK Settings ===============");
             output.close();
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-            throw new Error(CONFIG_PATH + " should be a file, not a directory");
+            throw new Error(CONFIG_PATH + " should be a file, not a directory", e);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw new Error("Could not create properties files... Has the application write accesss ?");
+            throw new Error("Could not create properties files... Has the application write accesss ?", e);
 
         }
     }

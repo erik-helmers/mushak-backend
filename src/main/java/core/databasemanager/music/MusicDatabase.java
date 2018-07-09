@@ -6,20 +6,10 @@ import core.entities.mediatypes.Album;
 import core.entities.mediatypes.Artist;
 import core.entities.mediatypes.Genre;
 import core.entities.mediatypes.Song;
-import core.song_identifier.SongRegister;
-import easysqlite.Repository;
+import easysqlite.core.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.*;
-import core.entities.utils.SongUtils;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 @org.springframework.stereotype.Repository
 public class MusicDatabase extends Database {

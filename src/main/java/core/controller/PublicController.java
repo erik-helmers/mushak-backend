@@ -3,6 +3,7 @@ package core.controller;
 import core.entities.Response;
 import core.security.UserAuthenticationService;
 import core.security.UserRegistrationService;
+import logger.Log;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -59,9 +60,9 @@ final class PublicController {
             final HttpServletRequest request,
             @RequestParam("username") final String username,
             @RequestParam("password") final String password) {
-        System.out.println("Created user "+username+"...");
+        Log.info("Created user "+username+"...");
         String output = registerService.register(username, password).toString();
-        System.out.println("Success !");
+        Log.info("Success !");
         return output;
 
 

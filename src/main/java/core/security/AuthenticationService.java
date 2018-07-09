@@ -5,6 +5,7 @@ import core.entities.users.SecurityUser;
 import core.entities.users.User;
 import core.exceptions.BadCredentialException;
 import core.exceptions.TokenNotFoundException;
+import logger.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.util.UUID;
  */
 
 @Service
-@Log4j2
 public class AuthenticationService implements UserAuthenticationService, UserRegistrationService{
 
     private final UserDatabase user_db;
@@ -38,7 +38,7 @@ public class AuthenticationService implements UserAuthenticationService, UserReg
         //TODO: password encryption
         User new_user = User.builder().id(0L).username(username).password(password).build();
         user_db.write.register(new_user);
-        log.debug("Created accounted with '"+username + "' username");
+        Log.info("Security", "Created accounted with '"+username + "' username");
         return SecurityUser.builder().username(username).password(password).build();
     }
 
