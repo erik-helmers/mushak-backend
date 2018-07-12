@@ -3,9 +3,11 @@ package core.entities;
 import com.google.gson.*;
 import core.entities.mediatypes.MusicElement;
 import core.entities.mediatypes.Song;
+import core.entities.users.MusicProfile;
 import easysqlite.annotations.declarations.ConverterTarget;
 import easysqlite.annotations.declarations.IdColumn;
 import easysqlite.serialization.Converter;
+
 import logger.Log;
 
 import java.io.Serializable;
@@ -36,7 +38,7 @@ public abstract class Entity<T extends Entity.Id> {
     // ================================================ ID ================================================
 
 
-    public static abstract class Id<T> implements Serializable{
+    public static abstract class Id<T> implements Serializable, easysqlite.serialization.Serializable{
 
         protected final T _id;
 
@@ -52,7 +54,7 @@ public abstract class Entity<T extends Entity.Id> {
         }
         @Override
         public String toString() {
-            return _id.toString();
+            return "UnknownTypeId("+_id.toString()+")";
         }
         @Override
         public int hashCode() {
@@ -62,6 +64,62 @@ public abstract class Entity<T extends Entity.Id> {
         public static Id fromString(String from, Class target){
             throw new IllegalStateException("this shouldn't be called");
         }
+
+        public String represent(){ return _id.toString();}
+
+        @Override
+        public String serialize() {
+            Log.debug_call();
+            return represent();
+        }
+
+        public static boolean propagate(){
+            return true;
+        }
+
+
+        /*
+        Deserialize an Id
+         */
+        public static Object deserialize(String from, Class target, Class source){
+
+            try {
+                //In case where the Id class was obfuscated by generic, find it by source class
+                if (target.equals(Id.class)) {
+                    target = Arrays.stream(source.getDeclaredClasses())
+                            .filter(Id.class::isAssignableFrom)
+                            .findFirst()
+                            .orElseThrow(() -> new Error("there should be some Id class in an entity!"));
+                }
+                Log.debug_value("target", target);
+                Method method = target.getMethod("fromString", String.class, Class.class);
+                return method.invoke(null, from, target);
+            } catch (NoSuchMethodException e) {
+                throw new Error("WOW ! this state is pretty illegal", e);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new Error(e);
+            }
+            }
+        }
+
+
+
+    public static abstract class IntegerId extends Entity.Id<Integer>{
+
+        public IntegerId(Integer id) {
+            super(id);
+        }
+
+        public static Id fromString(String from, Class target){
+            try {
+                Log.debug_value("target", target);
+                return (Id) target.getConstructor(Integer.class).newInstance(Integer.parseInt(from));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new Error("Uh oh something happened when calling child constructor !", e);
+            }
+        }
+
+
     }
     //endregion
 
@@ -80,27 +138,6 @@ public abstract class Entity<T extends Entity.Id> {
 
     //region serialization
     // ========================================== SERIALIZATION ===========================================
-
-    @ConverterTarget(Id.class)
-    public static Converter idConverter = new Converter(
-            Object::toString,
-            (from, target, source) -> {
-                try {
-                    target = Arrays.stream(source.getDeclaredClasses())
-                            .filter(Id.class::isAssignableFrom)
-                            .findFirst()
-                            .get();
-                    Method method = target.getMethod("fromString", String.class, Class.class);
-                    return method.invoke(null, from, target);
-                } catch (NoSuchMethodException e) {
-                    throw new Error("A media type should have a constructor of type T(Integer) !", e);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new Error(e);
-                }
-            },
-            true
-    );
-    //endregion
 
     private static class IdAdapter implements JsonSerializer<Id<?>> {
 

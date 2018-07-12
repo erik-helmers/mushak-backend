@@ -1,13 +1,14 @@
 package core.config;
 
 import core.Settings;
+import core.security.AccessDenied;
 import logger.Log;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,60 +26,70 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import core.security.NoRedirectStrategy;
 import core.security.TokenAuthenticationFilter;
 import core.security.TokenAuthenticationProvider;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-
+class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     TokenAuthenticationProvider provider;
     Settings settings;
 
     @Autowired
-    public SecurityConfig(final TokenAuthenticationProvider provider,
-                          Settings settings) {
+    SecurityConfig(final TokenAuthenticationProvider provider, Settings settings) {
+
         super();
         this.provider = requireNonNull(provider);
         this.settings = settings;
+
+
+        boolean enabled = settings.getBoolean(Settings.Key.ENABLE_SECURITY);
+        PUBLIC_URLS = getPublicUrls(enabled);
+        PROTECTED_URLS = getProtectedUrls();
+        Log.debug_line("SECURITY " + (enabled ? "ENABLED" : "DISABLED"));
+
     }
+
+
+    private RequestMatcher getPublicUrls(boolean security_enabled){
+        if (security_enabled) {
+            return new OrRequestMatcher(
+                    new AntPathRequestMatcher("/public/**"),
+                    new AntPathRequestMatcher("/error")
+            );
+        }
+        else {
+            return new OrRequestMatcher(
+                    new AntPathRequestMatcher( "**")
+            );
+        }
+
+    }
+    private RequestMatcher getProtectedUrls(){
+        return new NegatedRequestMatcher(PUBLIC_URLS);
+    }
+
+    private final RequestMatcher PUBLIC_URLS ;
+    private final RequestMatcher PROTECTED_URLS ;
+
+
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(provider);
     }
 
-    private RequestMatcher getPublicUrls(){
-        RequestMatcher publics;
-        if (settings.getBoolean(Settings.ENABLE_SECURITY)) {
-            Log.debug_line("============== SECURITY ENABLED ! ===========");
-            publics = new OrRequestMatcher(
-                    new AntPathRequestMatcher("/public/**")
-            );
-        }
-        else
-            publics = new OrRequestMatcher(
-                    new AntPathRequestMatcher("**")
-            );
-        return publics;
-    }
-
-    private RequestMatcher protectedUrls(){
-        return new NegatedRequestMatcher(getPublicUrls());
-    }
-
     @Override
     public void configure(final WebSecurity web) {
-        web.ignoring().requestMatchers(getPublicUrls());
+        web.ignoring().requestMatchers(PUBLIC_URLS);
     }
 
     @Override
@@ -90,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 // this entry point handles when you request a protected page and you are not yet
                 // authenticated
-                .defaultAuthenticationEntryPointFor(forbiddenEntryPoint(), protectedUrls())
+                .defaultAuthenticationEntryPointFor(forbiddenEntryPoint(), PROTECTED_URLS)
                 .and()
                 .authenticationProvider(provider)
                 .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
@@ -106,9 +117,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     TokenAuthenticationFilter restAuthenticationFilter() throws Exception {
-        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(protectedUrls());
+        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(PROTECTED_URLS);
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(successHandler());
+        filter.setAuthenticationFailureHandler(new AccessDenied());
         return filter;
     }
 
@@ -123,15 +135,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * Disable Spring boot automatic filter registration.
      */
     @Bean
-    FilterRegistrationBean<?> disableAutoRegistration(final TokenAuthenticationFilter filter) {
-        final FilterRegistrationBean registration = new FilterRegistrationBean<>(filter);
+    FilterRegistrationBean disableAutoRegistration(final TokenAuthenticationFilter filter) {
+        final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setEnabled(false);
         return registration;
     }
 
     @Bean
     AuthenticationEntryPoint forbiddenEntryPoint() {
-        return new HttpStatusEntryPoint(UNAUTHORIZED);
+        return new HttpStatusEntryPoint(HttpStatus.I_AM_A_TEAPOT);
     }
-
 }

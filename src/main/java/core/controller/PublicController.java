@@ -1,11 +1,11 @@
 package core.controller;
 
+import core.accounts.LoginForm;
+import core.accounts.RegisterForm;
 import core.entities.Response;
-import core.security.UserAuthenticationService;
-import core.security.UserRegistrationService;
-import logger.Log;
+import core.accounts.UserAuthenticationService;
+import core.accounts.UserRegistrationService;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,37 +35,19 @@ final class PublicController {
     @Autowired
     UserRegistrationService registerService;
 
-    @RequestMapping("/status")
-    public Response getServerStatus(){
-        return Response.builder()
-                .info("Hello world!")
-                .status(200)
-                .build();
-    }
+
 
 
     @PostMapping("/login")
-    String login(
-            final HttpServletRequest request,
-            @RequestParam("username") final String username,
-            @RequestParam("password") final String password) {
-        log.debug("Received connection attempt with creditentials "+username+ " : "+password);
-        return authService
-                .login(username, password)
-                .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
+    public Response login(final HttpServletRequest request,
+                          @RequestBody LoginForm form){
+        return authService.login(form);
     }
 
+
     @PostMapping("/register")
-    String register(
-            final HttpServletRequest request,
-            @RequestParam("username") final String username,
-            @RequestParam("password") final String password) {
-        Log.info("Created user "+username+"...");
-        String output = registerService.register(username, password).toString();
-        Log.info("Success !");
-        return output;
-
-
+    public Response register(@RequestBody RegisterForm form){
+        return registerService.register(form);
     }
 
 

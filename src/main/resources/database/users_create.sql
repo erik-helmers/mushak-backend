@@ -1,39 +1,44 @@
-CREATE TABLE IF NOT EXISTS logins(
-  username text NOT NULL UNIQUE,
+CREATE TABLE IF NOT EXISTS users(
+
+  id integer PRIMARY KEY NOT NULL,
+
+  username text NOT NULL,
+  name text NOT NULL,
+
   password text NOT NULL,
   salt text NOT NULL,
-  token text,
-  tokenExpireDate date,
-  userID integer,
-  FOREIGN KEY(userID) REFERENCES users(userID)
-);
+  
+  has_image boolean,
 
-CREATE TABLE IF NOT EXISTS users(
-  userID integer PRIMARY KEY NOT NULL,
+  role integer default 1,
+  settings integer UNIQUE,
+  musicProfile integer UNIQUE,
 
-  name text NOT NULL,
-  image_path text,
-  role integer default 0,
-  settings integer,
-  musicProfile integer,
+  FOREIGN KEY(role) REFERENCES role(id),
+  FOREIGN KEY(settings) REFERENCES userSettings(id),
+  FOREIGN KEY(musicProfile) REFERENCES musicProfile(id)
 
-  FOREIGN KEY(role) REFERENCES role(roleID),
-  FOREIGN KEY(settings) REFERENCES userSettings(settingID),
-  FOREIGN KEY(musicProfile) REFERENCES musicProfile(musicProfileID)
 );
 
 CREATE TABLE IF NOT EXISTS userSettings(
-  settingID integer PRIMARY KEY
+  id integer PRIMARY KEY
 );
 
 
 CREATE TABLE IF NOT EXISTS role(
-  roleID integer PRIMARY KEY,
+  id integer PRIMARY KEY,
   name text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS musicProfile(
-  musicProfileID integer PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tokens(
+  token text,
+  expireDate integer,
+  userID integer,
+  FOREIGN KEY(userID) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS musicProfiles(
+  id integer PRIMARY KEY,
   songs text
 )
 

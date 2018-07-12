@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="EasySQLite">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../EasySQLite/1.0.1/out/artifacts/EasySQLite_jar/EasySQLite.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

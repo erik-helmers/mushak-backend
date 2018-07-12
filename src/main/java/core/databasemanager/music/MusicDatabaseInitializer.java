@@ -2,7 +2,6 @@ package core.databasemanager.music;
 
 
 import core.Settings;
-import core.databasemanager.DatabaseModule;
 
 import core.entities.utils.SongUtils;
 import core.song_identifier.SongRegister;
@@ -17,13 +16,17 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
+public class MusicDatabaseInitializer {
 
+    Settings settings;
+    MusicDatabase parent;
 
-    public MusicDatabaseInitializer(MusicDatabase database) {
-        super(database);
+    public MusicDatabaseInitializer(
+            MusicDatabase musicDatabase
+    ) {
+        settings = null;
+        parent =  musicDatabase;
     }
-
 
     class FileHandler extends SimpleFileVisitor<Path> {
 
@@ -49,16 +52,16 @@ public class MusicDatabaseInitializer extends DatabaseModule<MusicDatabase> {
     void build_database(){
         long startTime = System.nanoTime();
 
-        File file = settings.getPath(Settings.MUSIC_DIRECTORY).toFile();
+        File file = settings.getPath(Settings.Key.MUSIC_DIRECTORY).toFile();
 
         if (!file.exists() || !file.isDirectory()){
             throw new Error("music-dir should be a directory");
         }
-        System.out.println("g");
+
         FileHandler result = new FileHandler();
         try {
 
-            Files.walkFileTree(Paths.get(settings.get(Settings.MUSIC_DIRECTORY)),
+            Files.walkFileTree(Paths.get(settings.get(Settings.Key.MUSIC_DIRECTORY)),
                     result);
             new SongRegister(parent).register(result.files);
 

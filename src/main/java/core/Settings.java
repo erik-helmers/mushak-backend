@@ -1,5 +1,6 @@
 package core;
 
+import logger.Log;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -13,13 +14,25 @@ import java.util.Properties;
 @Service
 public class Settings {
 
-
     public static final String CONFIG_PATH = "config.properties";
-    public static final String ENABLE_SECURITY = "security";
-    public static final String MUSIC_DIRECTORY = "music-directory";
-    public static final String MUSIC_DB_PATH = "music-db-path";
-    public static final String UPDATE_DB_ON_LOAD = "update-db-on-load";
-    public static final String USERS_DB_PATH= "users-db-path";
+
+    public static enum Key{
+
+        ENABLE_SECURITY ("security", "true"),
+        MUSIC_DIRECTORY ("music-directory", "Music Sample"),
+        MUSHAK_DB ("mushak-db-path", "mushak.db"),
+        UPDATE_DB_ON_LOAD ("update-db-on-load", "true");
+
+        public final String name;
+
+        public final String default_value;
+
+        Key(String name, String default_value){
+            this.name = name;
+            this.default_value = default_value;
+        }
+
+    }
 
     private Properties prop = new Properties();
 
@@ -29,11 +42,11 @@ public class Settings {
 
         try {
             output = new FileOutputStream(file);
-            prop.setProperty(ENABLE_SECURITY, "true");
-            prop.setProperty(MUSIC_DIRECTORY, "Music Sample");
-            prop.setProperty(MUSIC_DB_PATH, "mushak.db");
-            prop.setProperty(UPDATE_DB_ON_LOAD, "true");
-            prop.setProperty(USERS_DB_PATH, "users.db");
+
+            for (Key key : Key.values()){
+                prop.setProperty(key.name, key.default_value);
+            }
+            
             prop.store(output, "============= MuShaK Settings ===============");
             output.close();
         } catch (FileNotFoundException e) {
@@ -75,26 +88,30 @@ public class Settings {
                 }
             }
 
-            System.out.println(prop.get(Settings.USERS_DB_PATH));
-            System.out.println(prop);
 
         }
 
-        public String get(String id){
-            String result = prop.getProperty(id);
+        public String get(Key id){
+            String result = prop.getProperty(id.name);
             //System.out.println("Requested : " + id + " result is '"+result+"'");
             return result;
         }
 
-        public Path getPath(String id){
-            Path output = Paths.get(prop.getProperty(id));
+        public Path getPath(Key id){
+            Log.debug_call();
+            Path output = Paths.get(get(id));
+            Log.debug_value("output", output.toAbsolutePath());
             if (!output.toFile().exists())
+            {
+                Log.debug_value("output", output.toAbsolutePath());
                 return null;
+            }
+
             return output;
         }
 
-        public boolean getBoolean(String id){
-            return prop.getProperty(id).equals("true");
+        public boolean getBoolean(Key id){
+            return get(id).equals("true");
         }
 
 

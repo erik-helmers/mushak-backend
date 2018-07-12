@@ -21,7 +21,7 @@ public class SongUtils {
 
     @Autowired
     public SongUtils(Settings settings){
-        music_db = settings.get(Settings.MUSIC_DIRECTORY);
+        music_db = settings.get(Settings.Key.MUSIC_DIRECTORY);
     }
 
     static String[] music_ext = {".mp3", ".m4a", ".flac"};

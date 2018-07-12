@@ -1,5 +1,6 @@
 package core.exceptions;
 
+import core.entities.Response;
 import org.springframework.hateoas.VndErrors;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,8 +18,10 @@ public class ExceptionAdvices {
     @ResponseBody
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    VndErrors userNotFoundExceptionHandler(UserNotFoundException e){
-        return new VndErrors("error", e.getMessage());
+    Response userNotFoundExceptionHandler(UserNotFoundException e){
+        Response output = new Response();
+        output.addInfo("error", e.toString());
+        return output;
     }
 
     @ResponseBody

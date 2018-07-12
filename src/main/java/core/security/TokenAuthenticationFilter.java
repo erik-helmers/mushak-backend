@@ -5,11 +5,16 @@ package core.security;
  * By Erik Helmers, the 27/05/2018
  */
 
+
+import logger.Log;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
@@ -35,6 +40,10 @@ public final class TokenAuthenticationFilter extends AbstractAuthenticationProce
     public Authentication attemptAuthentication(
             final HttpServletRequest request,
             final HttpServletResponse response) {
+
+        Log.debug_value("uri", request.getRequestURI());
+
+
         final String param = ofNullable(request.getHeader(AUTHORIZATION))
                 .orElse(request.getParameter("t"));
 

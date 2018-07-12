@@ -1,21 +1,20 @@
 package core;
 
 
-import core.security.AuthenticationService;
+import core.accounts.BasicAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 public class Application {
 
 
     final
-    AuthenticationService auth;
+    BasicAuthentication auth;
 
     @Autowired
-    public Application(AuthenticationService auth) {
+    public Application(BasicAuthentication auth) {
         this.auth = auth;
     }
 
