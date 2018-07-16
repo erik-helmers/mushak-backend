@@ -1,18 +1,23 @@
 package core.entities.users;
 
 import ch.qos.logback.classic.joran.action.LevelAction;
+import easysqlite.annotations.declarations.Column;
 import easysqlite.annotations.declarations.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-
+@ToString
 @FieldDefaults(level = AccessLevel.PUBLIC)
 @Table("tokens")
 public class Token {
 
+    @Column
     String token;
+    @Column
     long expireDate;
+    @Column
     User.Id userID;
 
     public Token(){}
